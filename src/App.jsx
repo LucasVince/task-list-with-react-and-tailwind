@@ -1,33 +1,60 @@
 import AddTask from "./components/AddTasks";
 import Tasks from "./components/Tasks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const App = () => {
-  const [tasks, setTasks] = useState([{
-    id: 1,
-    title: "Task 1",
-    description: "Description 1",
-    completed: false,
-  },
-  {
-    id: 2,
-    title: "Task 2",
-    description: "Description 2",
-    completed: false,
-  },
-  {
-    id: 3,
-    title: "Task 3",
-    description: "Description 3",
-    completed: false,
-  },
-]);
+  const [tasks, setTasks] = useState(
+    JSON.parse(localStorage.getItem('tasks')) || []
+  );
+
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    console.log(tasks);
+  }, [tasks]);
+
+  const onTaskClick = (taskId) => {
+    const newTasks = tasks.map(task => {
+      if (task.id == taskId) {
+        task.completed = !task.completed;
+      }
+
+      return task;
+    });
+
+    setTasks(newTasks);    
+  }
+
+  const onDelete = (taskId) => {
+    const newTasks = tasks.filter(task => task.id !== taskId)
+
+    setTasks(newTasks)
+  }
+
+  const onClickAddTask = (title, description) => {
+    const newTask = {
+      id: tasks.length + 1,
+      title,
+      description,
+      completed: false,
+    }
+
+    setTasks([...tasks, newTask]);
+  }
+
   return (
     <div className="w-screen h-screen bg-slate-500 text-white flex justify-center items-center flex-col">
-      <div className="w-[500px]">
-        <h1 className="text-3xl text-center font-bold">Task List</h1>
-        <AddTask />
-        <Tasks tasks={tasks} />
+      <div className="w-[500px] flex flex-col gap-5">
+        <h1 className="text-3xl text-center font-bold">
+          Task List
+        </h1>
+        <AddTask
+          onClickAddTask={onClickAddTask}
+        />
+        <Tasks
+          tasks={tasks}
+          onTaskClick={onTaskClick}
+          onDelete={onDelete}
+        />
       </div>
     </div>
   );
