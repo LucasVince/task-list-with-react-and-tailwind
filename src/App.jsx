@@ -9,7 +9,6 @@ const App = () => {
 
   useEffect(() => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
-    console.log(tasks);
   }, [tasks]);
 
   const onTaskClick = (taskId) => {
